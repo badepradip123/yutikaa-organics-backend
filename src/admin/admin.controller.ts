@@ -1,0 +1,87 @@
+import { Controller, Get, Param, Patch,Post,UseInterceptors,UploadedFile, Query, Body, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UserRole } from '../generated/prisma/client';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
+import { Type } from 'class-transformer';
+import { AdminService } from './admin.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { SupabaseStorageService } from '@/storage/supabase-storage.service';
+import { ProductsService } from '@/products/products.service';
+import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { BadRequestException } from '@nestjs/common';
+
+class UpdateUserAdminDto {
+  @IsOptional() @IsEnum(UserRole) role?: UserRole;
+  @IsOptional() @Type(() => Boolean) @IsBoolean() isActive?: boolean;
+}
+
+@ApiTags('admin')
+@ApiBearerAuth()
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(UserRole.SUPER_ADMIN)
+@Controller('admin')
+export class AdminController {
+  constructor( private readonly supabaseStorageService: SupabaseStorageService,private readonly productsService: ProductsService,private readonly service: AdminService) {}
+
+  @Get('dashboard') dashboard() {
+    return this.service.dashboard();
+  }
+
+  @Get('users')
+  users(@Query('page') page = '1', @Query('limit') limit = '20', @Query('search') search?: string) {
+    return this.service.listUsers(
+      Math.max(1, Number(page)),
+      Math.min(100, Math.max(1, Number(limit))),
+      search,
+    );
+  }
+
+  @Patch('users/:id')
+  updateUser(@Param('id') id: string, @Body() dto: UpdateUserAdminDto) {
+    return this.service.updateUser(id, dto);
+  }
+
+@Post('products/:id/image')
+@ApiOperation({ summary: 'Upload product image' })
+@ApiConsumes('multipart/form-data')
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      file: {
+        type: 'string',
+        format: 'binary',
+      },
+    },
+    required: ['file'],
+  },
+})
+@UseInterceptors(FileInterceptor('file'))
+async uploadProductImage(
+  @Param('id') productId: string,
+  @UploadedFile() file: Express.Multer.File,
+) {
+  if (!file) {
+    throw new BadRequestException('Image file is required');
+  }
+
+  const imageUrl =
+    await this.supabaseStorageService.uploadProductImage(
+      productId,
+      file,
+    );
+
+  await this.productsService.updateImageUrl(
+    productId,
+    imageUrl,
+  );
+
+  return {
+    message: 'Product image uploaded successfully',
+    imageUrl,
+  };
+}
+}
