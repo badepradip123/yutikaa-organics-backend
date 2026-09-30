@@ -1,4 +1,4 @@
-# AGENTS.md — Yuthika Organics Backend
+# AGENTS.md — Yutikaa Organics Backend
 
 ## Project rules
 

@@ -1,6 +1,6 @@
-# Upgrading the existing Yuthika database safely
+# Upgrading the existing Yutikaa database safely
 
-The current Yuthika project already has users, addresses, products, variants, inventory, orders and payments.
+The current Yutikaa project already has users, addresses, products, variants, inventory, orders and payments.
 
 Before production deployment:
 

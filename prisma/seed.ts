@@ -158,7 +158,7 @@ async function main() {
   if ((await prisma.testimonial.count()) === 0) {
     await prisma.testimonial.createMany({ data: [
       { customerName: 'Priya S.', location: 'Mumbai', quote: 'The freshness and aroma are unmatched. Finally, real spices that make a difference.', rating: 5, sortOrder: 1, isActive: true },
-      { customerName: 'Rahul K.', location: 'Bengaluru', quote: 'I love the purity and authentic taste. Yuthika Organics is my go-to for spices.', rating: 5, sortOrder: 2, isActive: true },
+      { customerName: 'Rahul K.', location: 'Bengaluru', quote: 'I love the purity and authentic taste. Yutikaa Organics is my go-to for spices.', rating: 5, sortOrder: 2, isActive: true },
       { customerName: 'Neha M.', location: 'Delhi', quote: 'Excellent quality and packaging. Highly recommended!', rating: 5, sortOrder: 3, isActive: true },
     ] });
   }

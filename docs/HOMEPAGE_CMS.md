@@ -8,7 +8,7 @@ The homepage is now served by `GET /api/v1/home` and is configured through the a
 - Shop by category: category image + `homepageEnabled`.
 - Best sellers: existing Product `isFeatured` flag.
 - Brand story: title, description, image and CTA.
-- Why choose Yuthika: repeatable items.
+- Why choose Yutikaa: repeatable items.
 - Testimonials: repeatable customer quotes.
 - Certifications: repeatable trust badges.
 - Recipes & spice guide: image or video media plus text content.

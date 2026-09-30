@@ -30,7 +30,7 @@ async function main() {
   });
 
   console.log('\n====================================');
-  console.log('   Yuthika Organics');
+  console.log('   Yutikaa Organics');
   console.log('   Create SUPER_ADMIN');
   console.log('====================================\n');
 

@@ -1,8 +1,8 @@
 {
-  "name": "yuthika-organics-backend",
+  "name": "yutikaa-organics-backend",
   "version": "1.0.0",
   "private": true,
-  "description": "Production backend API for Yuthika Organics",
+  "description": "Production backend API for Yutikaa Organics",
   "scripts": {
     "build": "nest build",
     "start": "nest start",

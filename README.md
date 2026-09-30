@@ -1,6 +1,6 @@
-# Yuthika Organics — Production Backend
+# Yutikaa Organics — Production Backend
 
-Production-oriented ecommerce API for the Yuthika Organics web storefront, admin panel and React Native mobile app.
+Production-oriented ecommerce API for the Yutikaa Organics web storefront, admin panel and React Native mobile app.
 
 ## Stack
 
@@ -54,7 +54,7 @@ npm run start:dev
 API: `http://localhost:3000/api/v1`
 Docs: `http://localhost:3000/docs`
 
-## Existing Yuthika database
+## Existing Yutikaa database
 
 If you are replacing the current incremental backend, do not blindly run a fresh `init` migration against an existing database. First back up the database, compare the generated Prisma schema with the current schema, then create a migration for the differences.
 

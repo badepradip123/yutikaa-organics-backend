@@ -58,8 +58,8 @@ async function bootstrap() {
     config.get<string>('ENABLE_SWAGGER', isProduction ? 'false' : 'true') === 'true';
   if (enableSwagger) {
     const swaggerConfig = new DocumentBuilder()
-      .setTitle('Yuthika Organics API')
-      .setDescription('Production API for Yuthika Organics storefront, admin and mobile apps.')
+      .setTitle('Yutikaa Organics API')
+      .setDescription('Production API for Yutikaa Organics storefront, admin and mobile apps.')
       .setVersion('1.0.0')
       .addBearerAuth()
       .build();
@@ -75,7 +75,7 @@ async function bootstrap() {
   const port = config.get<number>('PORT', 3000);
   await app.listen(port, '0.0.0.0');
 
-  console.log(`Yuthika Organics API running on port ${port}`);
+  console.log(`Yutikaa Organics API running on port ${port}`);
   if (!isProduction) {
     console.log(`API: http://localhost:${port}/${prefix}`);
     if (enableSwagger) {
