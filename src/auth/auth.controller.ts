@@ -1,20 +1,32 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
-import { RegisterDto } from './dto/register.dto';
+import { SendOtpDto } from './dto/send-otp.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly auth: AuthService) {}
 
-  @Post('register') register(@Body() dto: RegisterDto) {
-    return this.auth.register(dto);
+  // Customers: mobile OTP. Rate limited per IP on top of the per-number limits in OtpService.
+  @Post('send-otp')
+  @Throttle({ default: { limit: 5, ttl: 60_000 } })
+  sendOtp(@Body() dto: SendOtpDto) {
+    return this.auth.sendOtp(dto);
   }
 
+  @Post('verify-otp')
+  @Throttle({ default: { limit: 10, ttl: 60_000 } })
+  verifyOtp(@Body() dto: VerifyOtpDto) {
+    return this.auth.verifyOtp(dto);
+  }
+
+  // Staff only: email + password. Customers are rejected here.
   @Post('login') login(@Body() dto: LoginDto) {
     return this.auth.login(dto);
   }

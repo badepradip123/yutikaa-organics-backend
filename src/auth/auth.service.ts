@@ -1,4 +1,9 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -8,23 +13,26 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { SendOtpDto } from './dto/send-otp.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { OtpService } from './otp/otp.service';
 import { JwtUser } from './strategies/jwt.strategy';
 
 type AuthUserRecord = {
   id: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   firstName: string | null;
   lastName: string | null;
   role: JwtUser['role'];
   isActive: boolean;
-  passwordHash?: string;
+  passwordHash?: string | null;
   refreshTokenHash?: string | null;
 };
 
 type SanitizedUser = {
   id: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   firstName: string | null;
   lastName: string | null;
@@ -38,49 +46,43 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwt: JwtService,
     private readonly config: ConfigService,
+    private readonly otp: OtpService,
   ) {}
 
-  async register(dto: RegisterDto) {
-    const email = dto.email.toLowerCase().trim();
-    const phone = dto.phone?.trim() || null;
+  sendOtp(dto: SendOtpDto) {
+    return this.otp.send(dto.phone);
+  }
 
-    const existing = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ email }, ...(phone ? [{ phone }] : [])],
-      },
-      select: { email: true, phone: true },
-    });
+  // Customers sign in (or sign up on first use) with a mobile OTP.
+  async verifyOtp(dto: VerifyOtpDto) {
+    const phone = await this.otp.verify(dto.phone, dto.otp);
+    let user = await this.findCustomerByPhone(phone);
 
-    if (existing?.email === email) throw new ConflictException('Email already registered');
-    if (phone && existing?.phone === phone)
-      throw new ConflictException('Phone number already registered');
-
-    const passwordHash = await bcrypt.hash(dto.password, 12);
-    try {
-      const user = await this.prisma.user.create({
+    if (user) {
+      if (user.role !== 'CUSTOMER') throw new UnauthorizedException('Staff accounts sign in with email and password');
+      if (!user.isActive) throw new UnauthorizedException('This account is disabled');
+    } else {
+      user = await this.prisma.user.create({
         data: {
-          email,
           phone,
-          passwordHash,
           firstName: dto.firstName?.trim() || null,
           lastName: dto.lastName?.trim() || null,
           role: 'CUSTOMER',
           isActive: true,
         },
       });
-      return this.issueTokens(user.id, user.email, user.role, user);
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
-        throw new ConflictException('Email or phone number already registered');
-      }
-      throw error;
     }
+
+    return this.issueTokens(user.id, user.email, user.role, user);
   }
 
   async login(dto: LoginDto) {
     const email = dto.email.toLowerCase().trim();
     const user = await this.prisma.user.findUnique({ where: { email } });
-    if (!user || !user.isActive) throw new UnauthorizedException('Invalid email or password');
+    // Email + password is for staff only; customers sign in with mobile OTP.
+    if (!user || !user.isActive || !user.passwordHash || user.role === 'CUSTOMER') {
+      throw new UnauthorizedException('Invalid email or password');
+    }
 
     const valid = await bcrypt.compare(dto.password, user.passwordHash);
     if (!valid) throw new UnauthorizedException('Invalid email or password');
@@ -133,6 +135,7 @@ export class AuthService {
   async changePassword(userId: string, dto: ChangePasswordDto) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new UnauthorizedException('User not found');
+    if (!user.passwordHash) throw new BadRequestException('This account does not use a password');
     const valid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
     if (!valid) throw new UnauthorizedException('Current password is incorrect');
 
@@ -169,7 +172,18 @@ export class AuthService {
     }
   }
 
-  private async issueTokens(userId: string, email: string, role: JwtUser['role'], user: AuthUserRecord) {
+  // Stored numbers may predate normalisation (e.g. "+91 98765 43210"), so match the common forms.
+  private async findCustomerByPhone(phone: string) {
+    const variants = [phone, `+91${phone}`, `91${phone}`, `0${phone}`];
+    const matches = await this.prisma.user.findMany({
+      where: { phone: { in: variants } },
+      take: 2,
+    });
+    if (matches.length > 1) throw new ConflictException('Multiple accounts use this phone number. Please contact support.');
+    return matches[0] ?? null;
+  }
+
+  private async issueTokens(userId: string, email: string | null, role: JwtUser['role'], user: AuthUserRecord) {
     const accessToken = await this.jwt.signAsync(
       { sub: userId, email, role },
       {

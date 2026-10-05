@@ -12,8 +12,9 @@
 
 ## Auth
 
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
+- `POST /api/v1/auth/send-otp` (customers: mobile OTP)
+- `POST /api/v1/auth/verify-otp` (customers: mobile OTP, signs up on first use)
+- `POST /api/v1/auth/login` (staff only: email + password)
 - `POST /api/v1/auth/refresh`
 - `POST /api/v1/auth/logout`
 - `GET /api/v1/auth/me`

@@ -55,9 +55,9 @@ enum ContentMediaType {
 
 model User {
   id               String    @id @default(uuid())
-  email            String    @unique
+  email            String?   @unique
   phone            String?   @unique
-  passwordHash     String
+  passwordHash     String?
   firstName        String?
   lastName         String?
   role             UserRole  @default(CUSTOMER)
@@ -72,6 +72,19 @@ model User {
   @@index([role])
   @@index([isActive])
   @@map("users")
+}
+
+model OtpCode {
+  id         String    @id @default(uuid())
+  phone      String
+  codeHash   String
+  attempts   Int       @default(0)
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([phone, createdAt])
+  @@map("otp_codes")
 }
 
 model Address {

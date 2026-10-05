@@ -205,6 +205,7 @@ export class OrdersService {
             OR: [
               { orderNumber: { contains: query.search, mode: 'insensitive' } },
               { user: { email: { contains: query.search, mode: 'insensitive' } } },
+              { user: { phone: { contains: query.search, mode: 'insensitive' } } },
             ],
           }
         : {}),

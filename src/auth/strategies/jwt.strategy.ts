@@ -7,13 +7,13 @@ import { PrismaService } from '../../prisma/prisma.service';
 
 export type JwtUser = {
   id: string;
-  email: string;
+  email: string | null;
   role: UserRole;
 };
 
 type JwtPayload = {
   sub: string;
-  email: string;
+  email: string | null;
   role: UserRole;
 };
 
