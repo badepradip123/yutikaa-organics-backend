@@ -13,6 +13,7 @@ import { OrdersModule } from './orders/orders.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
+import { RecipesModule } from './recipes/recipes.module';
 import { ShippingModule } from './shipping/shipping.module';
 import { StorageModule } from './storage/storage.module';
 
@@ -36,6 +37,7 @@ import { StorageModule } from './storage/storage.module';
     AdminModule,
     CategoriesModule,
     ProductsModule,
+    RecipesModule,
     AddressesModule,
     CartsModule,
     OrdersModule,

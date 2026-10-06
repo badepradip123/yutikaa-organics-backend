@@ -1,0 +1,83 @@
+{
+  "source": "Yutikaa Organics page-wise website content sheet — Home row (applied 2026-10-06)",
+  "notes": [
+    "Empty arrays mean 'leave this section untouched'. Nothing is fabricated here: testimonials and certifications stay empty until real reviews and real certificates exist, and the storefront hides those sections while they are empty.",
+    "imageUrl placeholders point at /images/content-placeholder.svg on the storefront. Replace them with uploads from the admin panel.",
+    "matchTitle / matchSlug identify an existing record to update; without a match the record is created."
+  ],
+  "heroBanners": [
+    {
+      "matchTitle": "One Spice. Many Lands. Infinite Flavours.",
+      "eyebrow": "ONE SPICE. MANY LANDS.",
+      "title": "One Spice. Many Lands. Infinite Flavours.",
+      "description": "Discover authentic spices, explore their origins and the recipes they belong in — with Yutikaa AI coming soon.",
+      "imageUrl": "/images/content-placeholder.svg",
+      "ctaLabel": "Shop Our Spices",
+      "ctaLink": "/spices",
+      "sortOrder": 0,
+      "isActive": true
+    },
+    {
+      "matchTitle": "Good Food Starts with Good Ingredients",
+      "ctaLabel": "Explore Spices",
+      "ctaLink": "/spices/whole-spices",
+      "sortOrder": 1,
+      "isActive": true
+    },
+    {
+      "matchTitle": "From Farm to Your Family",
+      "ctaLabel": "Know Our Story",
+      "ctaLink": "/about-us",
+      "sortOrder": 2,
+      "isActive": true
+    }
+  ],
+  "popularSpices": [
+    { "matchSlug": "balck-peper", "name": "Black Pepper", "slug": "black-pepper", "sortOrder": 1, "isActive": true },
+    { "matchSlug": "slung-turmeric", "name": "Turmeric", "slug": "turmeric", "sortOrder": 2, "isActive": true },
+    { "matchSlug": "red-chilli", "name": "Red Chilli", "slug": "red-chilli", "sortOrder": 3, "isActive": true },
+    { "matchSlug": "coriander", "name": "Coriander", "slug": "coriander", "sortOrder": 4, "isActive": true },
+    { "matchSlug": "cumin", "name": "Cumin", "slug": "cumin", "sortOrder": 5, "isActive": true }
+  ],
+  "brandStory": {
+    "eyebrow": "OUR STORY",
+    "title": "Rooted in Tradition. Grown for a Healthier Tomorrow.",
+    "description": "From trusted farms to everyday kitchens, we are building a spice brand around authenticity, care and better choices.\n\nYutikaa Organics brings the character of Indian spices closer to your kitchen — regional favourites, everyday essentials and the stories behind the ingredients you cook with.",
+    "buttonLabel": "Know Our Story",
+    "buttonLink": "/about-us",
+    "isActive": true
+  },
+  "whyChoose": [
+    {
+      "matchTitle": "Yutikaaa - Farmers to customer",
+      "title": "Sourced from trusted farms",
+      "description": "We buy from farms we know, so every pack can be traced back to the people who grew it.",
+      "sortOrder": 1,
+      "isActive": true
+    },
+    {
+      "matchTitle": "Yutikaaa - Farmers ",
+      "title": "Packed for everyday cooking",
+      "description": "Practical pack sizes, careful handling and clear labels for the way Indian kitchens actually cook.",
+      "sortOrder": 2,
+      "isActive": true
+    },
+    {
+      "matchTitle": "Regional favourites, everyday essentials",
+      "title": "Regional favourites, everyday essentials",
+      "description": "From regional specialities to the spices you reach for daily, chosen for authentic taste.",
+      "sortOrder": 3,
+      "isActive": true
+    },
+    {
+      "matchTitle": "Recipes and guidance included",
+      "title": "Recipes and guidance included",
+      "description": "Every spice comes with usage ideas, so you know exactly what to cook with it next.",
+      "sortOrder": 4,
+      "isActive": true
+    }
+  ],
+  "testimonials": [],
+  "certifications": [],
+  "recipes": []
+}

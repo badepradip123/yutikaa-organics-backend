@@ -20,7 +20,8 @@
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset --force",
-    "create:super-admin": "tsx scripts/create-super-admin.ts"
+    "create:super-admin": "tsx scripts/create-super-admin.ts",
+    "content:home": "tsx scripts/apply-home-content.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.0",
