@@ -11,6 +11,7 @@ import {
   Min,
   ValidateNested,
 } from 'class-validator';
+import { ProductOriginDto } from './product-origin.dto';
 
 export class CreateProductVariantDto {
   @IsOptional() @IsString() @MaxLength(80) name?: string;
@@ -30,6 +31,11 @@ export class CreateProductDto {
   @IsOptional() @IsString() description?: string;
   @IsOptional() @IsBoolean() isFeatured?: boolean;
   @IsOptional() @IsArray() @IsString({ each: true }) images?: string[];
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ProductOriginDto)
+  origins?: ProductOriginDto[];
   @IsArray()
   @ArrayMinSize(1)
   @ValidateNested({ each: true })

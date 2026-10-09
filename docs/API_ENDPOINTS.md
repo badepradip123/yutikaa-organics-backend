@@ -9,6 +9,10 @@
 - `GET /api/v1/products`
 - `GET /api/v1/products/:id`
 - `GET /api/v1/products/slug/:slug`
+- `GET /api/v1/origins` (active origins with their active products)
+- `GET /api/v1/origins/slug/:slug`
+
+`GET /api/v1/products` accepts `origin=<origin id or slug>` alongside `category`, `search` and `isFeatured`. Every product response carries an `origins` array (`id`, `name`, `slug`, `stateCode`, `locality`, `note`).
 
 ## Auth
 
@@ -39,7 +43,8 @@
 ## Admin
 
 - Category CRUD
-- Product CRUD/status/images
+- Product CRUD/status/images (`origins: [{ originId, locality?, note? }]` on create/update replaces the product's origin list)
+- Origin CRUD: `GET /api/v1/origins/admin/list`, `POST /api/v1/origins`, `PATCH /api/v1/origins/:id`, `DELETE /api/v1/origins/:id` (deactivates) — SUPER_ADMIN, PRODUCT_ADMIN
 - Variant and inventory management
 - Order list/detail/status
 - Shipment/tracking management

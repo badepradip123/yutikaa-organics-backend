@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { HealthModule } from './health/health.module';
 import { HomeModule } from './home/home.module';
 import { OrdersModule } from './orders/orders.module';
+import { OriginsModule } from './origins/origins.module';
 import { PaymentsModule } from './payments/payments.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
@@ -37,6 +38,7 @@ import { StorageModule } from './storage/storage.module';
     AdminModule,
     CategoriesModule,
     ProductsModule,
+    OriginsModule,
     RecipesModule,
     AddressesModule,
     CartsModule,

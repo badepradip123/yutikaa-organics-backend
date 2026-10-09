@@ -4,6 +4,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { CreateProductVariantDto } from './dto/create-product-variant.dto';
 import { ListProductsDto } from './dto/list-products.dto';
+import { ProductOriginDto } from './dto/product-origin.dto';
 import { UpdateImagesDto } from './dto/update-images.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
@@ -27,7 +28,29 @@ const productInclude = {
     orderBy: { weightGrams: 'asc' as const },
     include: { inventory: true },
   },
+  origins: {
+    where: { origin: { isActive: true } },
+    orderBy: { sortOrder: 'asc' as const },
+    include: { origin: true },
+  },
 };
+
+// Admin responses keep inactive variants and origins so they stay editable.
+const adminProductInclude = {
+  ...productInclude,
+  variants: { orderBy: { weightGrams: 'asc' as const }, include: { inventory: true } },
+  origins: { orderBy: { sortOrder: 'asc' as const }, include: { origin: true } },
+};
+
+function toOriginLinks(origins: ProductOriginDto[]) {
+  const unique = new Map(origins.map((origin) => [origin.originId, origin]));
+  return [...unique.values()].map((origin, index) => ({
+    originId: origin.originId,
+    locality: origin.locality?.trim() || null,
+    note: origin.note?.trim() || null,
+    sortOrder: index,
+  }));
+}
 
 @Injectable()
 export class ProductsService {
@@ -40,6 +63,15 @@ export class ProductsService {
       ...(query.isFeatured === undefined ? {} : { isFeatured: query.isFeatured }),
       ...(query.category
         ? { category: { OR: [{ id: query.category }, { slug: query.category }], isActive: true } }
+        : {}),
+      ...(query.origin
+        ? {
+            origins: {
+              some: {
+                origin: { OR: [{ id: query.origin }, { slug: query.origin }], isActive: true },
+              },
+            },
+          }
         : {}),
       ...(query.search
         ? {
@@ -102,6 +134,9 @@ export class ProductsService {
       ...(query.category
         ? { category: { OR: [{ id: query.category }, { slug: query.category }] } }
         : {}),
+      ...(query.origin
+        ? { origins: { some: { origin: { OR: [{ id: query.origin }, { slug: query.origin }] } } } }
+        : {}),
       ...(query.search
         ? {
             OR: [
@@ -117,10 +152,7 @@ export class ProductsService {
         skip,
         take: query.limit,
         orderBy: { [query.sortBy]: query.sortOrder },
-        include: {
-          ...productInclude,
-          variants: { orderBy: { weightGrams: 'asc' }, include: { inventory: true } },
-        },
+        include: adminProductInclude,
       }),
       this.prisma.product.count({ where }),
     ]);
@@ -155,6 +187,7 @@ export class ProductsService {
             images: dto.images?.length
               ? { create: dto.images.map((url, index) => ({ url, sortOrder: index })) }
               : undefined,
+            origins: dto.origins?.length ? { create: toOriginLinks(dto.origins) } : undefined,
             variants: {
               create: dto.variants.map((variant) => ({
                 name: variant.name ?? `${variant.weightGrams}g`,
@@ -172,16 +205,15 @@ export class ProductsService {
               })),
             },
           },
-          include: {
-            ...productInclude,
-            variants: { orderBy: { weightGrams: 'asc' }, include: { inventory: true } },
-          },
+          include: adminProductInclude,
         });
         return product;
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')
         throw new ConflictException('Product slug or SKU already exists');
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003')
+        throw new NotFoundException('Origin not found');
       throw error;
     }
   }
@@ -198,15 +230,15 @@ export class ProductsService {
           shortDescription: dto.shortDescription,
           description: dto.description,
           isFeatured: dto.isFeatured,
+          origins: dto.origins ? { deleteMany: {}, create: toOriginLinks(dto.origins) } : undefined,
         },
-        include: {
-          ...productInclude,
-          variants: { orderBy: { weightGrams: 'asc' }, include: { inventory: true } },
-        },
+        include: adminProductInclude,
       });
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002')
         throw new ConflictException('Product slug already exists');
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2003')
+        throw new NotFoundException('Origin or category not found');
       throw error;
     }
   }

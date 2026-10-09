@@ -23,6 +23,11 @@ interface ProductCategory {
   name: string;
   slug: string;
 }
+interface ProductOriginLink {
+  locality: string | null;
+  note: string | null;
+  origin: { id: string; name: string; slug: string; stateCode: string | null };
+}
 interface ProductWithRelations {
   id: string;
   name: string;
@@ -33,6 +38,7 @@ interface ProductWithRelations {
   category: ProductCategory;
   images: ProductImage[];
   variants: ProductVariant[];
+  origins?: ProductOriginLink[];
 }
 
 export function toPublicProduct(product: ProductWithRelations) {
@@ -47,6 +53,14 @@ export function toPublicProduct(product: ProductWithRelations) {
     images: [...product.images]
       .sort((a, b) => a.sortOrder - b.sortOrder)
       .map((image) => ({ id: image.id, url: image.url, altText: image.altText })),
+    origins: (product.origins ?? []).map((link) => ({
+      id: link.origin.id,
+      name: link.origin.name,
+      slug: link.origin.slug,
+      stateCode: link.origin.stateCode,
+      locality: link.locality,
+      note: link.note,
+    })),
     variants: product.variants.map((variant) => {
       const available =
         (variant.inventory?.quantity ?? 0) - (variant.inventory?.reservedQuantity ?? 0);

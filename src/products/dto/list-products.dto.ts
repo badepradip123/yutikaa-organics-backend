@@ -24,6 +24,10 @@ export class ListProductsDto {
   category?: string;
 
   @IsOptional()
+  @IsString()
+  origin?: string;
+
+  @IsOptional()
   @Transform(({ value }) => (value === 'true' ? true : value === 'false' ? false : value))
   @IsBoolean()
   isFeatured?: boolean;

@@ -144,11 +144,46 @@ model Product {
   imageUrl         String?
   variants         ProductVariant[]
   orderItems       OrderItem[]
+  origins          ProductOrigin[]
 
   @@index([categoryId])
   @@index([status])
   @@index([status, isFeatured])
   @@map("products")
+}
+
+model Origin {
+  id          String          @id @default(uuid())
+  name        String          @unique
+  slug        String          @unique
+  stateCode   String?
+  tagline     String?
+  description String?
+  imageUrl    String?
+  isActive    Boolean         @default(true)
+  sortOrder   Int             @default(0)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  products    ProductOrigin[]
+
+  @@index([isActive, sortOrder])
+  @@map("origins")
+}
+
+model ProductOrigin {
+  id        String   @id @default(uuid())
+  productId String
+  originId  String
+  locality  String?
+  note      String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  origin    Origin   @relation(fields: [originId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, originId])
+  @@index([originId, sortOrder])
+  @@map("product_origins")
 }
 
 model ProductImage {
