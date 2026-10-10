@@ -19,6 +19,7 @@
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "prisma:seed": "tsx prisma/seed.ts",
+    "seed:origin-demo": "tsx scripts/seed-origin-demo.ts",
     "db:reset": "prisma migrate reset --force",
     "create:super-admin": "tsx scripts/create-super-admin.ts",
     "content:home": "tsx scripts/apply-home-content.ts"
